@@ -1,0 +1,106 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<h1>Job Application Tracker</h1>
+
+<p>Keep track of your job applications in one place.</p>
+
+<h2>Total Applications: {{ total_applications }}</h2>
+
+<div class="stats">
+
+    <div class="stat-card">
+        <h3>Applied</h3>
+        <p>{{ applied_count }}</p>
+    </div>
+
+    <div class="stat-card">
+        <h3>Interview</h3>
+        <p>{{ interview_count }}</p>
+    </div>
+
+    <div class="stat-card">
+        <h3>Offers</h3>
+        <p>{{ offer_count }}</p>
+    </div>
+
+    <div class="stat-card">
+        <h3>Rejected</h3>
+        <p>{{ rejected_count }}</p>
+    </div>
+
+</div>
+<div class="progress-section">
+    <h3>Interview Rate</h3>
+    <p>{{ interview_rate }}%</p>
+
+    <div class="progress-bar">
+        <div class="progress-fill" style="width: {{ interview_rate }}%;"></div>
+    </div>
+</div>
+<a class="btn add-btn" href="{% url 'add_application' %}">Add Application</a>
+
+<form method="GET" class="search-form">
+   <input type="text"
+       name="q"
+       placeholder="Search by company or role"
+       value="{{ query|default:'' }}">
+    <select name="status">
+    <option value="">All Statuses</option>
+
+    <option value="Applied"
+        {% if status_filter == 'Applied' %}selected{% endif %}>
+        Applied
+    </option>
+
+    <option value="Interview"
+        {% if status_filter == 'Interview' %}selected{% endif %}>
+        Interview
+    </option>
+
+    <option value="Offer"
+        {% if status_filter == 'Offer' %}selected{% endif %}>
+        Offer
+    </option>
+
+    <option value="Rejected"
+        {% if status_filter == 'Rejected' %}selected{% endif %}>
+        Rejected
+    </option>
+</select>
+    <button type="submit">Search</button>
+</form>
+
+<h2>Your Applications</h2>
+
+
+{% for application in applications %}
+
+    <div class="application-card">
+
+        <p>Company: {{ application.company }}</p>
+        <p>Role: {{ application.role }}</p>
+        <p>Status: {{ application.status }}</p>
+        <p>Date Applied: {{ application.date_applied }}</p>
+
+        {% if application.job_link %}
+            <p>
+                <a href="{{ application.job_link }}" target="_blank">
+                    View Job
+                </a>
+            </p>
+        {% endif %}
+
+
+        <a class="btn edit-btn" href="{% url 'edit_application' application.id %}">Edit</a>
+    
+        <a class="btn delete-btn" href="{% url 'delete_application' application.id %}">Delete</a>
+
+    </div>
+{% empty %}
+
+    <p>No applications found.</p>
+{% endfor %}
+
+{% endblock %}
